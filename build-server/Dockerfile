@@ -1,31 +1,30 @@
 FROM debian:buster
 
-# update & install packages
-RUN apt-get update -yq && apt-get install -yq curl unzip
+# Update & install packages
+RUN apt-get update && apt-get install -y unzip curl && rm -rf /var/lib/apt/lists/*
 
-# create server user
+# Create server user
 ENV HOME=/home/server
 ENV SERVER_HOME=/home/server/tm_server
-RUN mkdir -p /home/server && groupadd server && useradd -g server server && mkdir -p $SERVER_HOME
+RUN mkdir -p $SERVER_HOME && groupadd server && useradd -g server server
 
-# install dedicated server files
+# Install dedicated server files
 WORKDIR $HOME
-RUN curl -LJO http://files.v04.maniaplanet.com/server/TrackmaniaServer_Latest.zip &&
-    unzip TrackmaniaServer_Latest.zip -d tm_server/ && rm TrackmaniaServer_Latest.zip
+RUN curl -LJO http://files.v04.maniaplanet.com/server/TrackmaniaServer_Latest.zip && \
+    unzip TrackmaniaServer_Latest.zip -d $SERVER_HOME/ && \
+    rm TrackmaniaServer_Latest.zip
+
 WORKDIR $SERVER_HOME
 COPY run.sh .
 
-# switch to server user
-RUN chown -R server:server $HOME
+# Fix permissions before switching user
+RUN chown -R server:server $HOME && chmod +x $SERVER_HOME/TrackmaniaServer && chmod +x $SERVER_HOME/*.sh
+
+# Switch to server user
 USER server
-RUN chmod +x ./TrackmaniaServer && chmod +x *.sh
 
-# expose ports
-EXPOSE 2350/tcp
-EXPOSE 2350/udp
-EXPOSE 3450/tcp
-EXPOSE 3450/udp
-EXPOSE 5005
+# Expose ports
+EXPOSE 2350/tcp 2350/udp 3450/tcp 3450/udp 5005
 
-# docs: https://doc.maniaplanet.com/dedicated-server/references/command-line
-CMD "./run.sh"
+# Run the server
+CMD ["./run.sh"]

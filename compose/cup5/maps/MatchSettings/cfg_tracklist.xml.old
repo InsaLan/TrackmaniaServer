@@ -4,8 +4,8 @@
     <game_mode>0</game_mode>
     <script_name>Trackmania/TM_Cup_Online</script_name>
     <filter>
-      <is_lan>1</is_lan>
       <random_map_order>0</random_map_order>
+      <is_lan>1</is_lan>
     </filter>
   </gameinfo>
   <script_settings>

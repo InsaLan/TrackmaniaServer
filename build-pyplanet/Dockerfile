@@ -1,27 +1,29 @@
 FROM python:3.8-buster
 
-# update & install packages
-RUN apt-get update -yq && apt-get install -yq mariadb-client
+# Update & install required packages
+RUN apt-get update && apt-get install -y mariadb-client && rm -rf /var/lib/apt/lists/*
 
-# create server user
+# Create server user
 ENV HOME=/home/server
 ENV PYPLANET_HOME=/home/server/pyplanet
-RUN mkdir -p /home/server && groupadd server && useradd -g server server && mkdir -p $PYPLANET_HOME
+RUN mkdir -p $PYPLANET_HOME && groupadd server && useradd -g server server
 
-# install dedicated server files
+# Install dedicated server files
 WORKDIR $PYPLANET_HOME
 COPY run.sh .
+RUN chmod +x run.sh
 
-# switch to server user
-RUN chown -R server:server $HOME
-USER server
-RUN chmod +x *.sh
-
-# install pyplanet
+# Install PyPlanet
 ENV PATH="${PATH}:/home/server/.local/bin"
-ADD pyplanet $PYPLANET_HOME
-RUN pip3 install --user -r $PYPLANET_HOME/requirements.txt &&
-    mkdir $PYPLANET_HOME/tmp && mkdir $PYPLANET_HOME/logs
+COPY pyplanet $PYPLANET_HOME
+RUN pip3 install --no-cache-dir -r $PYPLANET_HOME/requirements.txt && \
+    mkdir -p $PYPLANET_HOME/tmp $PYPLANET_HOME/logs
 
-# docs: https://pypla.net/en/latest/intro/configuration.html
-CMD "./run.sh"
+# Fix ownership
+RUN chown -R server:server $HOME
+
+# Switch to server user
+USER server
+
+# Run the server
+CMD ["/bin/bash", "run.sh"]
