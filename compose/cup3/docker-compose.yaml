@@ -1,5 +1,3 @@
-version: '3.7'
-
 services:
   database:
     image: mariadb:latest
@@ -35,8 +33,8 @@ services:
     ports:
       - "2353:2353/tcp"
       - "2353:2353/udp"
-#      - "3450:3450/tcp"
-#      - "3450:3450/udp"
+    # - "3450:3450/tcp"
+    # - "3450:3450/udp"
     expose:
       - 5005
     volumes:

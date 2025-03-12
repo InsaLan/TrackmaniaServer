@@ -10,7 +10,7 @@ RUN mkdir -p /home/server && groupadd server && useradd -g server server && mkdi
 
 # install dedicated server files
 WORKDIR $HOME
-RUN curl -LJO http://files.v04.maniaplanet.com/server/TrackmaniaServer_Latest.zip && \
+RUN curl -LJO http://files.v04.maniaplanet.com/server/TrackmaniaServer_Latest.zip &&
     unzip TrackmaniaServer_Latest.zip -d tm_server/ && rm TrackmaniaServer_Latest.zip
 WORKDIR $SERVER_HOME
 COPY run.sh .
